@@ -1,58 +1,33 @@
-name: Build Android APK
+name: Build MI INVENTARIO
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
-      - master
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Descargar código
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: Instalar dependencias
         run: npm ci
 
-      - name: Build web app
+      - name: Compilar aplicación
         run: npm run build
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK packages
-        run: |
-          yes | sdkmanager --licenses || true
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
-
-      - name: Sync Capacitor
-        run: npx cap sync android
-
-      - name: Make Gradle executable
-        run: chmod +x android/gradlew
-
-      - name: Build APK
-        working-directory: android
-        run: ./gradlew assembleDebug --stacktrace
-
-      - name: Upload APK
+      - name: Guardar aplicación compilada
         uses: actions/upload-artifact@v4
         with:
-          name: MI-INVENTARIO-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: mi-inventario-web
+          path: dist
